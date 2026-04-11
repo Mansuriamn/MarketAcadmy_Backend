@@ -55,9 +55,8 @@ const app = express();
 // All middleware FIRST
 app.use(cookieParser());
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: "15mb" }));        // ← merged & moved up
+app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
-app.use(bodyParser.json({ limit: "15mb" }));
 app.use(morgan("dev"));
 app.use(helmet());
 
@@ -71,40 +70,35 @@ app.get("/api/blogs/search", getBlogBySearch);
 app.get("/api/blogs/category/:category", getBlogByCategory);
 app.get("/api/blogs", getAllBlogs);
 app.get("/api/blogs/:id", getBlogById);
-app.post("/api/blogs/create", createBlog);
+app.post("/api/blogs/create", protect, createBlog);
 app.delete("/api/blogs/:id", protect, deleteBlog);
 
 app.get("/api/courses/search", getCourseBySearch);
 app.get("/api/courses/category/:category", getCourseByCategory);
 app.get("/api/courses", getAllCourses);
 app.get("/api/courses/:id", getCourseById);
-app.post("/api/courses/create",  createCourse);
+app.post("/api/courses/create", protect, createCourse);
 app.delete("/api/courses/:id", protect, deleteCourse);
-
-
 
 app.get("/api/news/search", getNewsBySearch);
 app.get("/api/news/category/:category", getNewsByCategory);
 app.get("/api/news", getAllNews);
 app.get("/api/news/:id", getNewsById);
-// app.post("/api/news/create",  createNews);
+app.post("/api/news/create", protect, createNews);
 app.delete("/api/news/:id", protect, deleteNews);
 
-
 app.get("/api/headlines", getHeadlines);
-app.post("/api/headlines/create", createHeadline);
-
+app.post("/api/headlines/create", protect, createHeadline);
 
 // ✅ Routes AFTER middleware
 app.post("/upload", protect, upload.single("image"), uploadImage); 
 
-
 app.get("/api/get/trending", getTrending);
-app.post("/api/create/trending", createTrending);
+app.post("/api/create/trending", protect, createTrending);
 
+app.get("/api/get/emails", protect, getAllEmails);
+app.post("/api/create/email", createEmail); // Email subscription likely public
 
-app.get("/api/get/emails", getAllEmails);
-app.post("/api/create/email", createEmail);
 
 
 export default app;

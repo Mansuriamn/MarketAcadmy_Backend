@@ -33,13 +33,10 @@ export const fetchStockNews = async () => {
 
     const newsList = feed.items.slice(0, 5);
 
-   newsList.forEach(item => {
+   for (const item of newsList) {
     const finalHeadline = formatMarketHeadline(item.title);
-
-    createHeadline(finalHeadline);
-
-    // 👉 save to DB here later
-  });
+    await createHeadline({ text: finalHeadline });
+  }
 
   } catch (error) {
     console.error("❌ Service Error:", error.message);
