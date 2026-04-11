@@ -38,7 +38,7 @@ import {
 import{
 getHeadlines,
 createHeadline
-} from "../src/controllers/BreakingNews.controller.js";
+} from "../src/controllers/breakingNews.controller.js";
 import {
   getTrending,
   createTrending
