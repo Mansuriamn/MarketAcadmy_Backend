@@ -35,23 +35,22 @@ import {
   createBlog,
   deleteBlog,
   getBlogBySearch
-} from "../src/controllers/blog.controller.js";
-import{
-getHeadlines,
-createHeadline
-} from "../src/controllers/breakingNews.controller.js";
+} from "./controllers/blog.controller.js";
+import {
+  getHeadlines,
+  createHeadline
+} from "./controllers/breakingNews.controller.js";
 import {
   getTrending,
   getTrendingById
-  
-} from "../src/controllers/trending.controller.js";
-import { uploadImage } from "../src/controllers/uploadController.js";
+} from "./controllers/trending.controller.js";
+import { uploadImage } from "./controllers/uploadController.js";
 import {protect} from "./middlewares/auth.middleware.js";
 import { sendOTP,verifyOTP } from "./controllers/email.controller.js";
 import { apiLimiter, otpLimiter, loginLimiter } from "./middlewares/rateLimiter.mw.js";
 import { validate } from "./middlewares/validate.mw.js";
 import { createBlogSchema, createCourseSchema, createNewsSchema } from "./validations/schemas.js";
-import { getStockData } from "../src/controllers/stock.controller.js";
+import { getStockData } from "./controllers/stock.controller.js";
 
 
 const app = express();

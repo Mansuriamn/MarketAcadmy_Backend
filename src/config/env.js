@@ -14,7 +14,8 @@ const requiredEnv = [
   'CLOUDINARY_API_KEY',
   'CLOUDINARY_API_SECRET',
   'EMAIL_USER',
-  'EMAIL_PASS'
+  'EMAIL_PASS',
+  'FRONTEND_URL',
 ];
 
 export const validateEnv = () => {
