@@ -26,9 +26,13 @@ const courseSchema =new mongoose.Schema({
         type: String,
         required: true
     }
-},{
-  timestamps: true
-});
+}, { timestamps: true });
 
+// 🚀 PERFORMANCE: Faster queries for courses
+courseSchema.index({ publishedAt: -1 });
+courseSchema.index({ category: 1, publishedAt: -1 });
+
+// 🔥 FULL TEXT SEARCH Optimization
+courseSchema.index({ title: "text", category: "text", description: "text" });
 
 export default mongoose.model("Course", courseSchema);

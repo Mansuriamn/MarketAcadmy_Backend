@@ -1,7 +1,6 @@
 import cron from "node-cron";
-import { fetchNews } from "../services/news.service.js";
-
-export const NewsCron = () => {
+import {fetchCryptoNews} from "../services/trending.service.js";
+export const CryptoNews = () => {
 
   // ⏰ every 30 min, only 9 AM – 4 PM (Mon–Fri)
   cron.schedule("0 8-16 * * 1-5", async () => {
@@ -22,8 +21,8 @@ export const NewsCron = () => {
        return;
      }
 
-    console.log("📡 Fetching Stock News...");
-    await fetchNews();
+    console.log("📡 Fetching Crypto News...");
+    await fetchCryptoNews();
 
   });
  

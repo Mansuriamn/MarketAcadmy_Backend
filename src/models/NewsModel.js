@@ -21,10 +21,6 @@ const newsSchema = new mongoose.Schema({
     default: "general"
   },
 
-  views: {
-    type: Number,
-    default: 0
-  },
 
   publishedAt: {
     type: Date,
@@ -32,5 +28,12 @@ const newsSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
+
+// 🚀 PERFORMANCE: Faster queries for news categories and sorted feeds
+newsSchema.index({ publishedAt: -1 });
+newsSchema.index({ category: 1, publishedAt: -1 });
+
+// 🔥 FULL TEXT SEARCH Optimization
+newsSchema.index({ title: "text", category: "text", description: "text" });
 
 export default mongoose.model("News", newsSchema);

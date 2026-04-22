@@ -12,7 +12,7 @@ export const createNews = async (data) => {
 
 export const getAllNews = async (limit, offset) => {
   const news = await News.find({})
-    .sort({ createdAt: -1 })
+    .sort({ publishedAt: -1, _id: -1 })
     .skip(offset)
     .limit(limit)
     .lean();;
@@ -25,7 +25,7 @@ export const getNewsById = async (id) => {
 };
 export const getNewsByCategory = async (limit, offset, category) => {
   const news = await News.find({ category: category })
-    .sort({ createdAt: -1 })
+    .sort({ publishedAt: -1, _id: -1 })
     .skip(offset)
     .limit(limit)
     .lean();
@@ -56,7 +56,7 @@ export const getNewsSearch = async (limit, offset, q) => {
 
 
     const blogs = await News.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ publishedAt: -1, _id: -1 })
       .skip(numOffset)   // ✅ guaranteed number
       .limit(numLimit)   // ✅ guaranteed number
       .lean();
@@ -83,7 +83,13 @@ export const deleteNews = async (id) => {
 
 // 📰 RSS feeds
 const FEEDS = [
-  "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+  "https://www.cnbc.com/id/100727362/device/rss/rss.html",
+  "https://www.cnbc.com/id/20409666/device/rss/rss.html?x=1",
+  "https://www.cnbc.com/id/19832390/device/rss/rss.html",
+  "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+  "http://feeds.marketwatch.com/marketwatch/topstories/",
+  "https://www.investing.com/rss/news.rss",
+  "https://www.cnbc.com/id/19836768/device/rss/rss.html"
 ];
 
 // 🔑 Keywords
@@ -95,10 +101,39 @@ const KEYWORDS = [
 
 // 📂 Category keywords
 const CATEGORY_KEYWORDS = {
-  stock: ["stock", "market", "nifty", "sensex", "shares"],
-  crypto: ["bitcoin", "crypto", "ethereum", "blockchain"],
-  economy: ["inflation", "gdp", "economy", "rbi", "interest"],
-  global: ["usa", "china", "europe", "fed", "war", "oil"]
+  stock: [
+    "stock", "stocks", "market", "equity", "shares",
+    "nifty", "sensex", "bse", "nse", "midcap", "smallcap",
+    "dow", "nasdaq", "s&p", "ftse", "dax", "nikkei", "hang seng",
+    "ipo", "listing", "earnings", "results", "dividend",
+    "buyback", "valuation", "multibagger"
+  ],
+
+  crypto: [
+    "bitcoin", "btc", "ethereum", "eth",
+    "crypto", "cryptocurrency", "blockchain",
+    "altcoin", "defi", "web3", "token", "nft",
+    "binance", "coinbase"
+  ],
+
+  economy: [
+    "inflation", "gdp", "economy", "economic",
+    "recession", "growth", "fiscal", "deficit",
+    "rbi", "fed", "ecb", "interest rate", "rate hike", "rate cut",
+    "budget", "tax", "policy", "stimulus"
+  ],
+
+  global: [
+    "usa", "us", "china", "europe", "uk", "japan",
+    "war", "sanctions", "conflict", "tension",
+    "oil", "crude", "gas", "opec", "trade war"
+  ],
+
+  commodity: [
+    "gold", "silver", "crude", "oil", "natural gas",
+    "copper", "aluminium", "steel", "coal",
+    "commodity", "commodities"
+  ]
 };
 
 // 🧠 Detect category
@@ -128,6 +163,7 @@ const fetchOGImage = async (url) => {
       headers: { "User-Agent": "Mozilla/5.0" },
       signal: AbortSignal.timeout(5000)
     });
+
     const html = await res.text();
 
     const ogMatch =
@@ -144,14 +180,16 @@ const fetchOGImage = async (url) => {
   }
 };
 
-// 🔁 Run in batches (no pLimit needed)
+// 🔁 Run in batches
 const runInBatches = async (items, batchSize, fn) => {
   const results = [];
+
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     const batchResults = await Promise.all(batch.map(fn));
     results.push(...batchResults);
   }
+
   return results;
 };
 
@@ -196,7 +234,6 @@ export const fetchNews = async () => {
             publishedAt: item.isoDate ? new Date(item.isoDate) : new Date()
           });
 
-          // prevent duplicate in same batch
           existingLinks.add(link);
         }
       } catch (err) {
@@ -209,7 +246,7 @@ export const fetchNews = async () => {
       return;
     }
 
-    // 🖼 Fetch OG images in batches of 5
+    // 🖼 Fetch OG images in batches
     console.log(`🖼 Fetching images for ${newsToInsert.length} articles...`);
 
     newsToInsert = await runInBatches(newsToInsert, 5, async (item) => {
@@ -218,9 +255,20 @@ export const fetchNews = async () => {
       return { ...item, image };
     });
 
+    // ❌ REMOVE items with no image
+    const filteredNews = newsToInsert.filter(
+      (item) => item.image && item.image.trim() !== ""
+    );
+
+    if (filteredNews.length === 0) {
+      console.log("⚠️ No news with valid images");
+      return;
+    }
+
     // 🚀 Insert in DB
-    await News.insertMany(newsToInsert, { ordered: false });
-    console.log(`✅ Inserted ${newsToInsert.length} news`);
+    await News.insertMany(filteredNews, { ordered: false });
+
+    console.log(`✅ Inserted ${filteredNews.length} news`);
 
   } catch (err) {
     console.error("❌ Fatal Error:", err.message);

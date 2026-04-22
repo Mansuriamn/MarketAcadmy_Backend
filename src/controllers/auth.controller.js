@@ -5,11 +5,11 @@ export const registerUser = async (req, res) => {
     const {user,token} = await authService.register(req.body);
   
    res.cookie("token", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "Strict",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+     httpOnly: true,
+     secure: process.env.NODE_ENV === "production",
+     sameSite: "Strict",
+     maxAge: 24 * 60 * 60 * 1000,
+   });
     res.status(201).json({
       success: true,
       message: "User registered successfully",
@@ -30,10 +30,11 @@ export const loginUser = async (req, res) => {
     const {user,token} = await authService.login(req.body);
 
    res.cookie("token", token, {
-  httpOnly: true,
-  secure: false, // true in production (HTTPS)
-  sameSite: "Lax", // or "None" (if needed)
-});
+     httpOnly: true,
+     secure: process.env.NODE_ENV === "production",
+     sameSite: "Strict",
+     maxAge: 24 * 60 * 60 * 1000,
+   });
     res.status(200).json({
       success: true,
       message: "Login successful",
