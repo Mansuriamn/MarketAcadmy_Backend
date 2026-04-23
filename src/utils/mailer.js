@@ -35,7 +35,7 @@ export const sendWelcomeEmail = async (toEmail, name = "Trader") => {
    await transporter.sendMail({
   from: "Nadeem Mansoori | MarketAcad",
   to: toEmail,
-  subject: "🚀 Start Your Trading Journey with MarketAcad – Limited Access Inside",
+  subject: " Start Your Trading Journey with MarketAcad – Limited Access Inside",
   text: `Hello ,
 
 Welcome to MarketAcad!
@@ -60,7 +60,7 @@ Start learning. Start growing.`,
   html: `
   <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px;">
     
-    <h2 style="color: #0d9488;">🚀 Welcome, ${name}</h2>
+    <h2 style="color: #0d9488;"> Welcome</h2>
     <p>Your email has been successfully verified. You’re now part of <b>MarketAcad</b>.</p>
 
     <p>
@@ -87,7 +87,7 @@ Start learning. Start growing.`,
 
     <div style="background: #f0fdfa; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #0d9488; text-align: center;">
       <p style="margin: 0; font-weight: bold; color: #0d9488;">
-        🔥 Join Our WhatsApp Community
+         Join Our WhatsApp Community
       </p>
       <p style="margin-top: 10px;">
         Get live updates, insights & direct support
